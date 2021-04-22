@@ -12,15 +12,19 @@ if(not secrets.API_KEY):
     sys.exit('A valid API key must be provided in secrets.py.')
 
 rndstop = int(random.choice(stop_list())[0])
-init_data = BeautifulSoup(get_incoming_buses(rndstop, secrets.API_KEY), 'xml').find('StopMonitoringDelivery')
-
 print(get_stop_data(rndstop))
 
-try:
-    data = init_data.find_all('MonitoredStopVisit')
-except:
-    sys.exit('No bus incoming/outgoing bus data found.')
-
-for bus_entry in data:
+for bus_entry in gen_bus_list(get_incoming_buses(rndstop, secrets.API_KEY)):
     rndbus = bus(bus_entry)
     print(f'{rndbus.route_num} - From {rndbus.origin_title} to {rndbus.destination_title}.\nDue at {to_epoch(rndbus.due_time)}, expected at {to_epoch(rndbus.expected_time)}')
+    for bus_location_entry in gen_bus_list(get_bus_locations(rndbus.route_num, secrets.API_KEY)):
+        _busloc = bus_location(bus_location_entry)
+        if(_busloc.is_monitored):
+            if(_busloc.id == rndbus.id): # Check if GPS entry is same as incoming bus for a stop
+                print(_busloc.loc_lon, _busloc.loc_lat)
+        else:
+            print('Bus location is not monitored.')
+    '''
+    if rndbus.route_num in range(2, 10):
+        print(f'R{rndbus.route_num}')
+    '''

@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from requests import post
 from bs4 import BeautifulSoup
@@ -23,14 +24,28 @@ def get_bus_locations(route_num, api_key):
     post_data = f'<Siri version=\'2.0\' xmlns:ns2=\'http://www.ifopt.org.uk/acsb\' xmlns=\'http://www.siri.org.uk/siri\' xmlns:ns4=\' http://datex2.eu/schema/2_0RC1/2_0\' xmlns:ns3=\'http://www.ifopt.org.uk/ifopt\'><ServiceRequest> <RequestTimestamp>{req_time}</RequestTimestamp><RequestorRef>{api_key}</RequestorRef><VehicleMonitoringRequest version=\'2.0\'><RequestTimestamp>{req_time}</RequestTimestamp><VehicleMonitoringRef>VM_ACT_{formatted_route_num}</VehicleMonitoringRef></VehicleMonitoringRequest></ServiceRequest></Siri>'
     return(post(post_url, data=post_data).text.strip())
 
+def gen_bus_list(api_data):
+    try:
+        return BeautifulSoup(api_data, 'xml').find('StopMonitoringDelivery').find_all('MonitoredStopVisit')
+    except:
+        try:
+            return BeautifulSoup(api_data, 'xml').find('VehicleMonitoringDelivery').find_all('VehicleActivity')
+        except:
+            sys.exit('No incoming/outgoing bus data found...') 
+
 class bus():
     def __init__(self, api_data):
-        self.api_data = api_data
-        if(api_data.parent.find('MonitoredStopVisit')):
-            self.due_time = self.api_data.find('AimedArrivalTime').text
-            self.expected_time = self.api_data.find('ExpectedArrivalTime').text
-            self.route_num = self.api_data.find('ExternalLineRef').text
-            self.origin_title = self.api_data.find('OriginName').text.title()
-            self.destination_title = self.api_data.find('DestinationDisplayAtOrigin').text.title()
-        else:
-            pass
+        self.due_time = api_data.find('AimedArrivalTime').text
+        self.expected_time = api_data.find('ExpectedArrivalTime').text
+        self.route_num = api_data.find('ExternalLineRef').text
+        self.origin_title = api_data.find('OriginName').text.title()
+        self.destination_title = api_data.find('DestinationDisplayAtOrigin').text.title()
+        self.id = api_data.find('VehicleRef').text
+
+class bus_location():
+    def __init__(self, api_data):
+        self.is_monitored = True if(api_data.find('Monitored').text == 'true') else False
+        if(self.is_monitored):
+            self.id = api_data.find('VehicleRef').text
+            self.loc_lat = api_data.find("Latitude").text
+            self.loc_lon = api_data.find("Longitude").text

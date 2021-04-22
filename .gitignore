@@ -1,4 +1,5 @@
 *.log
+*.xml
 testreqs.py
 .vscode
 *.pot
