@@ -22,13 +22,11 @@ with open(f'{hashlib.md5(str(get_stop_data(rndstop)).encode("utf-8")).hexdigest(
 for bus_entry in gen_bus_list(data):
     rndbus = bus(bus_entry)
     print(f'{rndbus.route_title} - From {rndbus.origin_title} to {rndbus.destination_title}.\nDue at {to_epoch(rndbus.due_time)}, expected at {to_epoch(rndbus.expected_time)}')
+    print(f'Bike rack accces? {rndbus.bike_rack}.')
+    print(f'Wheelchair access? {rndbus.wheelchair}.')
     for bus_location_entry in gen_bus_list(get_bus_locations(rndbus.route_num, secrets.API_KEY)):
         _busloc = bus_location(bus_location_entry)
         if(_busloc.is_monitored):
             if(_busloc.id == rndbus.id): # Check if GPS entry is same as incoming bus for a stop
                 print(_busloc.loc_lat, _busloc.loc_lon)
                 print(_busloc.percentage)
-    '''
-    if rndbus.route_num in range(2, 10):
-        print(f'R{rndbus.route_num}') # Correctly display R buses (e.g R4, R2, R10, etc) as "R#", rather than "#"
-    '''

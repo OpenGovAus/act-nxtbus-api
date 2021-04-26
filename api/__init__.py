@@ -1,6 +1,6 @@
 import sys
 from datetime import datetime
-from requests import post
+from requests import api, post
 from bs4 import BeautifulSoup
 
 BASE_URL = 'http://siri.nxtbus.act.gov.au:11000/'
@@ -35,7 +35,6 @@ def gen_bus_list(api_data):
 
 class bus():
     def __init__(self, api_data):
-        self.due_time = api_data.find('AimedArrivalTime').text
         self.route_num = int(api_data.find('ExternalLineRef').text)
         self.origin_title = api_data.find('OriginName').text.title()
         self.destination_title = api_data.find('DestinationDisplayAtOrigin').text.title()
@@ -56,9 +55,21 @@ class bus():
         
         if(self.is_monitored):
             self.expected_time = api_data.find('ExpectedArrivalTime').text
+            self.due_time = api_data.find('AimedArrivalTime').text
             self.id = api_data.find('VehicleRef').text
         else:
+            self.due_time = 'N/A'
             self.expected_time = self.due_time
+        
+        self.bike_rack = False
+        self.wheelchair = False
+        for option in api_data.find_all('VehicleFeatureRef'):
+            if(option.text == 'Bike Rack'):
+                self.bike_rack = True
+            elif(option.text == 'Wheel Chair'):
+                self.wheelchair = True
+            else:
+                print(x.text)
 
 class bus_location():
     def __init__(self, api_data):
