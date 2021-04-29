@@ -31,9 +31,9 @@ poetry update
 
 ### API Key
 
-You used to be able to apply for a registration form [here](https://www.transport.act.gov.au/contact-us/information-for-developers/nxtbus-data-feed-registration-form), but the link has since been revoked. This doc will be updated in the future if an API key registration form is reuploaded.
+Register for an API key [here](https://www.transport.act.gov.au/contact-us/information-for-developers/nxtbus-data-feed-registration-form).
 
-If you do have an API key, put it in `secrets.py` like this:
+Once you receive an API key, put it in `secrets.py` like this:
 
 ```py
 API_KEY = 'APIKEY'
