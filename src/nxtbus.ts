@@ -1,7 +1,7 @@
-import fetch from 'node-fetch'
+import 'node-fetch'
 import {VehicleServiceResponse} from './response/vehicleServiceResponse.js'
 import {StopServiceResponse} from './response/stopServiceResponse.js'
-import * as fs from 'fs/promises'
+import {promises as fs} from "fs"
 import * as cheerio from 'cheerio'
 
 interface Services {

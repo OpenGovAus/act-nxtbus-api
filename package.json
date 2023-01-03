@@ -1,6 +1,6 @@
 {
   "name": "nxtbus",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "JavaScript module for Transport Canberra's NXTBUS API",
   "main": "dist/nxtbus.js",
   "types": "dist/nxtbus.d.ts",
